@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Dish {
+
+    private static int nextId = 1;
+    private int id;
     private String title;
     private BigDecimal price;
 
@@ -13,6 +16,7 @@ public class Dish {
     private String image;
 
     public Dish (String title, BigDecimal price, Duration preparationTime, String image) throws RestaurantException{
+        this.id = nextId++;
         this.title = title;
         this.price = price;
        setPreparationTime(preparationTime);
@@ -23,6 +27,9 @@ public class Dish {
         this(title, price, preparationTime, "blank");
     }
 
+    public int getId() {
+        return id;
+    }
 
     public String getTitle() {
         return title;
