@@ -27,6 +27,14 @@ public class Dish {
         this(title, price, preparationTime, "blank");
     }
 
+    public Dish(int id, String title, BigDecimal price, Duration preparationTime, String image) throws RestaurantException{
+        this.id = id;
+        this.title = title;
+        this.price = price;
+        this.preparationTime = preparationTime;
+        this.image = image;
+    }
+
     public int getId() {
         return id;
     }
