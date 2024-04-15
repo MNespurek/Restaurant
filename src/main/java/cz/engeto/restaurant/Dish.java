@@ -7,8 +7,8 @@ import java.time.LocalTime;
 
 public class Dish {
 
-    private static int nextId = 1;
-    private int id;
+    private static Integer nextId = 1;
+    private Integer id;
     private String title;
     private BigDecimal price;
 
@@ -27,7 +27,7 @@ public class Dish {
         this(title, price, preparationTime, "blank");
     }
 
-    public Dish(int id, String title, BigDecimal price, Duration preparationTime, String image) throws RestaurantException{
+    public Dish(Integer id, String title, BigDecimal price, Duration preparationTime, String image) throws RestaurantException{
         this.id = id;
         this.title = title;
         this.price = price;
@@ -35,7 +35,7 @@ public class Dish {
         this.image = image;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
