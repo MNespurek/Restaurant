@@ -1,6 +1,8 @@
 package cz.engeto.restaurant;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class Order {
     private Dish dish;
@@ -8,6 +10,8 @@ public class Order {
     private LocalTime orderedTime;
     private LocalTime fulfilmentTime;
     private Boolean alreadyPayed;
+
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
 
     public Order(Dish dish, Integer dishAmount, LocalTime orderedTime, LocalTime fulfilmentTime, Boolean alreadyPayed) {
@@ -18,16 +22,8 @@ public class Order {
         this.alreadyPayed = alreadyPayed;
     }
 
-
-
-
-
     public Dish getDish() {
         return dish;
-    }
-
-    public String getDishNumber() {
-        return String.valueOf(dish.getId());
     }
 
     public void setDish(Dish dish) {
@@ -38,28 +34,44 @@ public class Order {
         return dishAmount;
     }
 
+    public BigDecimal getTotalDishPrice() {
+        BigDecimal dishAmount = new BigDecimal(this.dishAmount);
+        return dishAmount.multiply(this.dish.getPrice());
+
+
+    }
+
+
     public void setDishAmount(Integer dishAmount) {
         this.dishAmount = dishAmount;
     }
 
-    public LocalTime getOrderedTime() {
-        return orderedTime;
+    public String getOrderedTime() {
+        return orderedTime.format(timeFormatter);
     }
 
     public void setOrderedTime(LocalTime orderedTime) {
         this.orderedTime = orderedTime;
     }
 
-    public LocalTime getFulfilmentTime() {
-        return fulfilmentTime;
+    public String getFulfilmentTime() { return fulfilmentTime.format(timeFormatter);
     }
 
     public void setFulfilmentTime(LocalTime fulfilmentTime) {
         this.fulfilmentTime = fulfilmentTime;
     }
 
-    public Boolean getAlreadyPayed() {
-        return alreadyPayed;
+    public String getAlreadyPayed() {
+        if (alreadyPayed) {
+            return "zaplaceno";
+        }
+        return "";
+    }
+
+    public String getAlreadyPayedStatus(Boolean alreadyPayed) {
+        this.alreadyPayed = alreadyPayed;
+        String status = alreadyPayed ? "zaplaceno" : "";
+        return status;
     }
 
     public void setAlreadyPayed(Boolean alreadyPayed) {
