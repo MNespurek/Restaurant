@@ -1,10 +1,9 @@
 package cz.engeto.restaurant;
 
 public class Settings {
-    private static final String ORDERS = "resources/orders.txt";
     private static final String DISHES = "resources/dishes.txt";
 
-    private static final String DELIMITER = "\t";
+    private static final String TAB = "\t";
     private static final String COMA = ".";
 
     private static final String SPACE = " ";
@@ -21,12 +20,32 @@ public class Settings {
 
     private static final String ORDERINGTEXT = "Objednávka pro stůl č. ";
 
-    public static String getDelimiter() {
-        return DELIMITER;
-    }
+    private static final String TABLESTARS = "**";
 
-    public static String getOrders() {
-        return ORDERS;
+    private static final String BEGINORDERINGSTARS = "****";
+
+    private static final String ENDORDERINGSTARS = "******";
+
+    private static final String MULTIPLYINGAMOUNTOFFOOD = "x";
+
+    private static final String RESOURCES = "resources/";
+
+    private static final String FILESUFFIX = ".txt";
+
+    public static String getFileSuffix() {return FILESUFFIX;}
+
+    public static String getEndorderingstars() {return ENDORDERINGSTARS;}
+
+    public static String getResources() {return RESOURCES;}
+
+    public static String getTableStars() {return TABLESTARS;}
+
+    public static String getBeginOrderingStars() {return BEGINORDERINGSTARS;}
+
+    public static String getMultiplyingamountoffood() {return MULTIPLYINGAMOUNTOFFOOD;}
+
+    public static String getTab() {
+        return TAB;
     }
 
     public static String getDishes() {
