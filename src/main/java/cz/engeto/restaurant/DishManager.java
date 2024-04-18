@@ -23,6 +23,12 @@ public class DishManager {
         dishStack.remove(dish);
     }
 
+    public void getDishTitles() {
+        for(Dish dish : dishStack) {
+            System.out.println(dish.getTitle());
+        }
+    }
+
     public Boolean wantToEdit(String answer) {
         answer = answer.toUpperCase(Locale.ROOT);
         return answer.equals("Y");
@@ -80,8 +86,6 @@ public class DishManager {
         }
     }
 
-
-
     public void editDish(String title) throws RestaurantException, NumberFormatException {
         Boolean found = false;
         for (Dish dish : dishStack) {
@@ -95,13 +99,12 @@ public class DishManager {
         }
         if (!found) {
             throw new RestaurantException("Jídlo s názvem " + title + "se nepodařilo najít.");
-
         }
     }
 
 
     public void saveDishStack(String file) throws RestaurantException {
-        String delimiter = Settings.getDelimiter();
+        String delimiter = Settings.getTab();
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)))){
             for(Dish dish : dishStack) {
                 writer.println(dish.getId() + delimiter
@@ -125,7 +128,7 @@ public class DishManager {
             while (scanner.hasNextLine()) {
                 lineCounter++;
                 String lineToSeparate = scanner.nextLine();
-                String[] lineField = lineToSeparate.split(Settings.getDelimiter());
+                String[] lineField = lineToSeparate.split(Settings.getTab());
                 int id = Integer.parseInt(lineField[0]);
                 String title = lineField[1];
                 BigDecimal price = new BigDecimal(lineField[2]);
@@ -135,7 +138,7 @@ public class DishManager {
                 dishStack.add(dish);
                 }
             }catch (FileNotFoundException e) {
-            throw new RestaurantException("Soubor " + file + "nebyl nalezen " + e.getLocalizedMessage() + ".");
+            System.err.println("Soubor " + file + "nebyl nalezen " + e.getLocalizedMessage() + ".");
         }catch (SecurityException e) {
             throw new RestaurantException("Nemáte dostatečné oprávnění pro přístup!" +e.getLocalizedMessage()+".");
         }
@@ -147,22 +150,27 @@ public class DishManager {
         }
     }
 
-    public Boolean isDishById(int id) {
+    public Boolean isDishById(Integer id) {
         for (Dish dish : dishStack) {
-            if(dish.getId() == id) {
+            if(dish.getId().equals(id)) {
                 return true;
             }
         }
         return false;
-    }
+        }
 
     public Dish chosenDish(int id) {
-        for (Dish dish : dishStack) {
-            if(dish.getId() == id) {
-                return dish;
+        try {
+            for (Dish dish : dishStack) {
+                if (dish.getId() == id) {
+                    return dish;
+                }
             }
+
+        } catch (NullPointerException e) {
+            System.out.println("Jídlo s Id" + id + "nebylo nalezen!");
         }
-        System.out.println("Jídlo s Id" +id+"nebylo nalezen!");
+        System.out.println("Nebylo nalezeno žádné jídlo");
         return null;
     }
 }
