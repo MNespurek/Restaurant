@@ -30,8 +30,8 @@ public class Dish {
     public Dish(Integer id, String title, BigDecimal price, Duration preparationTime, String image) throws RestaurantException{
         this.id = id;
         this.title = title;
-        this.price = price;
-        this.preparationTime = preparationTime;
+        setPrice(price);
+        setPreparationTime(preparationTime);
         this.image = image;
     }
 
@@ -51,9 +51,12 @@ public class Dish {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
+    public void setPrice(BigDecimal price) throws RestaurantException {
+        if(price.compareTo(BigDecimal.ZERO)<= 0) {
+            throw new RestaurantException("Cena nemůže být záporná. Vámi zadaná cena je: " +price+ ".");
+        }
+        else this.price = price;
+        }
 
     public Duration getPreparationTime() {
         return preparationTime;
