@@ -8,9 +8,14 @@ import java.util.*;
 
 public class DishManager {
 
+    private String fileName;
+
     private static final Scanner scanner = new Scanner(System.in);
     private List<Dish> dishStack = new ArrayList<>();
 
+    public DishManager() throws RestaurantException {
+        createDishFile();
+    }
     public List<Dish> getDishStack() {
         return dishStack;
     }
@@ -29,24 +34,27 @@ public class DishManager {
         }
     }
 
-    public Boolean wantToEdit(String answer) {
-        answer = answer.toUpperCase(Locale.ROOT);
-        return answer.equals("Y");
-    }
+    public void createDishFile() throws RestaurantException {
 
-    public void editTitle(Dish dish) {
-        System.out.println("Přejete si editovat název?\n Napiš Y pro ano a N pro ne\n");
-        String editTitleVariable = scanner.nextLine();
-        if (wantToEdit(editTitleVariable)) {
-            System.out.println("Zadejte nový název: \n");
-            String newTitle = scanner.nextLine();
-            dish.setTitle(newTitle);
+        File file = new File(Settings.getDishes());
+        try {
+            if (file.createNewFile()) {
+                System.out.println("Soubor s názvem " + file + " byl úspěšně vytvořen.");
+            }
+        } catch (IOException e) {
+            throw new RestaurantException("Soubor s názvem " + file + "se nepodařilo založit" + e.getLocalizedMessage());
         }
     }
+
+
+    public void editTitle(Dish dish) {
+        System.out.println("Zadejte nový název: \n");
+            String newTitle = scanner.nextLine();
+            dish.setTitle(newTitle);
+        System.out.println("Nový název jídla je: "+newTitle+" .");
+        }
+
     public void editPrice(Dish dish) throws RestaurantException {
-        String editPrice = scanner.nextLine();
-        System.out.println("Přejete si editovat cenu?\nNapiš Y pro ano a N pro ne\n");
-        if (wantToEdit(editPrice)) {
             System.out.println("Zadejte novou hodnotu ceny: \n");
             String newPrice = scanner.nextLine();
             try {
@@ -56,35 +64,29 @@ public class DishManager {
                 throw new RestaurantException("Nezadali jste hodnotu, která by byla převeditelná na Bigdecimal" + e.getLocalizedMessage() + ".");
             }
         }
-    }
-    public void editTime(Dish dish) throws RestaurantException {
-        System.out.println("Přete si editovat čas: \n");
-        String editTime = scanner.nextLine();
-        if (wantToEdit(editTime)) {
-            System.out.println("Zadejte nový čas: \n");
+
+    public void editDuration(Dish dish) throws RestaurantException {
+            System.out.println("Zadejte novou délku přípravy jídla: \n");
             String newTime = scanner.nextLine();
             try {
-                Duration duration = Duration.parse(newTime);
+                Duration duration = Duration.ofMinutes(Long.parseLong(newTime));
                 if (duration.isNegative()) {
                     throw new RestaurantException("Zadali jste zápornou hodnotu jídla " + duration + ".");
                 }
                 dish.setPreparationTime(duration);
             } catch (DateTimeParseException e) {
                 throw new RestaurantException(
-                        "Nezadali jste hodnotu, která by byla převeditelná na časový úsek. Zadali jste" +newTime+ "hodnotu, tu nelze převést!" + e.getLocalizedMessage() + ".");
+                        "Nezadali jste hodnotu, která by byla převeditelná na časový úsek. Zadali jste " +newTime+ " hodnotu, tu nelze převést!" + e.getLocalizedMessage() + ".");
             }
         }
-    }
+
 
     public void editImage(Dish dish) {
-        System.out.println("Přejete si editovat umístění obrázku? \nNapiš Y pro ano a N pro ne\n");
-        String editImage = scanner.nextLine();
-        if (wantToEdit(editImage)) {
             System.out.println("Zadejte nový odkaz: \n");
             String newImage = scanner.nextLine();
             dish.setImage(newImage);
         }
-    }
+
 
     public void editDish(String title) throws RestaurantException, NumberFormatException {
         Boolean found = false;
@@ -93,7 +95,7 @@ public class DishManager {
                 found = true;
                 editTitle(dish);
                 editPrice(dish);
-                editTime(dish);
+                editDuration(dish);
                 editImage(dish);
             }
         }
@@ -101,8 +103,6 @@ public class DishManager {
             throw new RestaurantException("Jídlo s názvem " + title + "se nepodařilo najít.");
         }
     }
-
-
     public void saveDishStack(String file) throws RestaurantException {
         String delimiter = Settings.getTab();
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)))){
@@ -138,15 +138,15 @@ public class DishManager {
                 dishStack.add(dish);
                 }
             }catch (FileNotFoundException e) {
-            System.err.println("Soubor " + file + "nebyl nalezen " + e.getLocalizedMessage() + ".");
-        }catch (SecurityException e) {
-            throw new RestaurantException("Nemáte dostatečné oprávnění pro přístup!" +e.getLocalizedMessage()+".");
+            System.err.println("Soubor " + file + " nebyl nalezen " + e.getLocalizedMessage() + ".");
+        }catch (NullPointerException e) {
+            System.err.println("Nebyl nalezen volaný objekt!" +e.getLocalizedMessage()+".");
         }
-        catch (NoSuchElementException e) {
-            throw new RestaurantException("Soubor má neplatný formát nebo strukturu " +e.getLocalizedMessage()+".");
+        catch (NumberFormatException e) {
+            System.err.println("Soubor " +file+ " má neplatný formát nebo strukturu na řádku "+lineCounter+ "." +e.getLocalizedMessage()+".");
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            throw new RestaurantException("Chyba při zpracování řádku "+lineCounter+ "v souboru" +file+ "." +e.getLocalizedMessage());
+            System.err.println("Chyba při zpracování řádku "+lineCounter+ "v souboru" +file+ "." +e.getLocalizedMessage());
         }
     }
 
