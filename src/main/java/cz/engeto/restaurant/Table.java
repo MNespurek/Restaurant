@@ -1,11 +1,12 @@
 package cz.engeto.restaurant;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-public class Tables {
+public class Table {
 
     private static final Scanner scanner = new Scanner(System.in);
     private Integer number;
@@ -15,15 +16,18 @@ public class Tables {
     private List<Order> orderList = new ArrayList<>();
 
 
-    public Tables(String name, Integer number) throws RestaurantException {
+    public Table(String name, Integer number) throws RestaurantException {
 
         this.name = name;
         this.number = number;
         createTableFile();
     }
 
-    public Integer getNumber() {
-        return number;
+    public String getNumber() {
+        if(number>0 && number<=9) {
+            return " " +number;
+        }
+        return String.valueOf(number);
     }
 
     public void setNumber(Integer number) {
@@ -38,8 +42,6 @@ public class Tables {
     public void setName(String name) {
         this.name = name;
     }
-
-
 
     private void createTableFile() throws RestaurantException {
 
@@ -58,19 +60,15 @@ public class Tables {
 
     public void createOrder() throws RestaurantException {
         System.out.println("Zadejte číslo jídla: \n");
-
         try {
             Integer numberOfDish = Integer.parseInt(scanner.nextLine());
-
             DishManager dishManager = new DishManager();
             dishManager.loadDishStack(Settings.getDishes());
             if (dishManager.isDishById(numberOfDish)) {
-
                 Dish dishById = dishManager.chosenDish(numberOfDish);
                 try {
                     System.out.println("Zadejte množství: \n");
                     Integer dishAmount = Integer.parseInt(scanner.nextLine());
-
                     System.out.println("Je zaplaceno? (Y/N) \n");
                     String answer = scanner.nextLine();
                     if (answer.equalsIgnoreCase("Y")) {
@@ -83,7 +81,6 @@ public class Tables {
                         Order order = new Order(dishById, dishAmount, alreadyPayed);
                         orderList.add(order);
                         System.out.println("Objednávka byla vytvořena!");
-                        ;
                     } else {
                         System.out.println("Nezadali jste ani jednu hodnotu!");
                     }
@@ -109,7 +106,6 @@ public class Tables {
         String currency = Settings.getCurrency();
         String colon = Settings.getColon();
         String dash = Settings.getDash();
-
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(this.getName())))) {
             Integer itemNumber = 1;
             writer.println(Settings.getTableStars() + Settings.getOrderingtext() + this.getNumber() + Settings.getTableStars());
@@ -135,10 +131,7 @@ public class Tables {
     }
 
     public void loadOrderList() throws RestaurantException, IOException {
-
         int lineCounter = 0;
-        //orderList.clear();
-
         try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(this.getName())))) {
             scanner.nextLine();
             scanner.nextLine();
@@ -146,7 +139,6 @@ public class Tables {
                 lineCounter++;
                 String sentence = scanner.nextLine();
                 if (sentence.trim().equals(Settings.getEndorderingstars())) {
-
                 } else {
                     String[] getPayed = sentence.split(Settings.getTab());
                     String[] dishIdAndDishAmount = getPayed[0].split(Settings.getSpace());
@@ -172,10 +164,15 @@ public class Tables {
             }
         } catch (FileNotFoundException e) {
             throw new RestaurantException("Soubor" + this.getName() + "se nepovedlo najít." + e.getLocalizedMessage());
-        } catch (IndexOutOfBoundsException e) {
+        }catch (IndexOutOfBoundsException e) {
             throw new RestaurantException("Zadaný index nebyl při rozdělení nalezen. Chyba je na řádku " + lineCounter + " souboru " + this.getName() + "." + e.getLocalizedMessage());
         } catch (NoSuchElementException e) {
             throw new RestaurantException("V souboru " + this.getName() + " není žádná objednávka." + e.getLocalizedMessage());
+        }catch (NullPointerException e) {
+            System.err.println("Nebyl nalezen volaný objekt!" +e.getLocalizedMessage()+".");
+        }
+        catch (NumberFormatException e) {
+            System.err.println("Soubor " +this.getName()+ " má neplatný formát nebo strukturu na řádku "+lineCounter+ "." +e.getLocalizedMessage()+".");
         }
     }
 
@@ -234,6 +231,16 @@ public class Tables {
             totalDuration += duration;
         }
         return totalDuration;
+    }
+    public String getTotalTablePrice() {
+
+        BigDecimal totalDishPrice = BigDecimal.ZERO;
+
+        for(Order order : orderList) {
+            BigDecimal dishPrice = order.getTotalDishPrice();
+            totalDishPrice = totalDishPrice.add(dishPrice);
+        }
+    return "Celková cena objednávky u stolu je: " +totalDishPrice+ " Kč";
     }
 }
 
