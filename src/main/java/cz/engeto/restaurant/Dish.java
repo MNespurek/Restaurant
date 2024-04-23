@@ -2,8 +2,7 @@ package cz.engeto.restaurant;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
+
 
 public class Dish {
 
@@ -50,6 +49,8 @@ public class Dish {
     public BigDecimal getPrice() {
         return price;
     }
+
+
 
     public void setPrice(BigDecimal price) throws RestaurantException {
         if(price.compareTo(BigDecimal.ZERO)<= 0) {

@@ -12,14 +12,31 @@ public class Main {
         /*Úkol č. 1. soubor pro jídla se vytváří při inicializaci objektu třídy dishManager (plním podmínku, že není nutné definovat žádný soubor dopředu).
          Stoly se vytváři rovněž inicializací (nevím, kolik jich bude, je to automatický proces)*/
 
-        //úkol č. 2 a 3
-        createDishes();
-        Table table15 = createTableOrder("stůl", 15);
-        Table table2 = createTableOrder("stůl", 2);
-        table15.getTotalTablePrice();
+        //úkol č. 2
+        DishManager dishManager = createDishes();
+        Table table15 = createTableAndOrderSaveOrderFortable("stůl", 15, 3);
+        Table table2 = createTableAndOrderSaveOrderFortable("stůl", 2, 1);
+        //úkol č. 3
+        System.out.println(table15.getTotalTablePrice());
+        table15.tableOrderListToBePrinted();
+
+        //úkol č. 4
         RestaurantManager restaurantManager = new RestaurantManager();
+        restaurantManager.addTable(table2);
+        restaurantManager.addTable(table15);
         System.out.println(restaurantManager.getOrdersBeforeFulfilmentTime());
         System.out.println(restaurantManager.averageGetReadyOrders());
+
+        //úkol č. 5
+
+        dishManager.loadDishStack(Settings.getDishes());
+        table15.loadOrderList();
+        table2.loadOrderList();
+
+        //úkol č. 6
+        //table15.createOrder(1);
+        //table15.saveOrderList();
+
     }
 
     public static DishManager createDishes() throws RestaurantException {
@@ -32,94 +49,16 @@ public class Main {
         dishManager.addDish(hranolky);
         dishManager.addDish(pstruh);
         dishManager.addDish(kofola);
+        dishManager.createDishFile();
+        dishManager.saveDishStack(Settings.getDishes());
         return dishManager;
+
     }
 
-    public static Table createTableOrder(String name, Integer number) throws RestaurantException {
-        DishManager dishManager = createDishes();
-        dishManager.loadDishStack(Settings.getDishes());
+    public static Table createTableAndOrderSaveOrderFortable(String name, Integer number, Integer numberOfOrders) throws RestaurantException {
         Table table = new Table(name, number);
-        table.createOrder();
+        table.createOrder(numberOfOrders);
+        table.saveOrderList();
         return table;
     }
-
-
-
-    public static void getTotalTablePrice(Table table) {
-        BigDecimal totalOrderPrice = BigDecimal.ZERO;
-        for(Order order : table.getOrderList()) {
-            totalOrderPrice = totalOrderPrice.add(order.getTotalDishPrice());
-        }
-
-    }
-
-    public static List<Order> sortedOrders() throws IOException, RestaurantException {
-
-        RestaurantManager restaurantManager = new RestaurantManager();
-        List<Order> sortedOrders = restaurantManager.allOrders();
-        for(Order order: sortedOrders) {
-            Collections.sort(sortedOrders, new Comparator<Order>() {
-
-                @Override
-                public int compare(Order order1, Order order2) {
-                    if (order1.getOrderedTimeToCompare().isBefore(order2.getOrderedTimeToCompare())) {
-                        return 1;
-                    }
-                    if (order1.getOrderedTimeToCompare().isAfter(order2.getOrderedTimeToCompare())) {
-                        return -1;
-                    } else return 0;
-
-                }
-            });
-        }
-         return sortedOrders;
-        }
-
-
-    }
-
-
-
-
-
-        /*DishManager dishManager = new DishManager();
-
-
-        dishManager.saveDishStack(Settings.getDishes());
-        dishManager.loadDishStack(Settings.getDishes());
-        //dishManager.saveDishStack(Settings.getDishes());
-
-
-        //Tables table4 = new Tables("table4", 4);
-        //table4.loadOrderList();
-        //table4.createOrder();
-        //table4.saveOrderList();
-        //table4.saveOrderList();
-
-        //table4.createOrder();
-        //table4.createOrder();
-        //table4.saveOrderList(Settings.getOrders());
-
-        //Tables table5 = new Tables("table5", 5);
-        //table5.loadOrderList();
-        //table5.createOrder();
-
-        //table5.saveOrderList();
-        //table5.createOrder();
-
-
-
-
-        /*System.out.println(dishManager.getDishStack().size());
-        dishManager.saveDishStack(Settings.getDishes());
-        dishManager.loadDishStack(Settings.getDishes());
-        System.out.println(dishManager.getDishStack().size());
-        Dish rizek1 = new Dish("Kuřecí řízek obalovaný 150 g", BigDecimal.valueOf(120), Duration.ofMinutes(10), "rizek.png");
-        dishManager.addDish(rizek1);
-        System.out.println(dishManager.getDishStack().size());
-        dishManager.saveDishStack(Settings.getDishes());
-        dishManager.loadDishStack(Settings.getDishes());
-        System.out.println(dishManager.getDishStack().size());*/
-
-
-
+}

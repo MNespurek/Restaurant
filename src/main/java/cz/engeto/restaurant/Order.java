@@ -17,12 +17,11 @@ public class Order {
 
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-
     public Order(Dish dish, Integer dishAmount, Boolean alreadyPayed) {
         this.dish = dish;
         this.dishAmount = dishAmount;
         this.orderedTime = LocalTime.now();
-        this.fulfilmentTime = LocalTime.now().plus(dish.getPreparationTime());
+        setFulfilmentTime(LocalTime.now().plus(dish.getPreparationTime()));
         this.alreadyPayed = alreadyPayed;
     }
 
@@ -33,8 +32,6 @@ public class Order {
         this.fulfilmentTime = fulfilmentTime;
         this.alreadyPayed = alreadyPayed;
     }
-
-
 
     public Dish getDish() {
         return dish;
@@ -55,8 +52,6 @@ public class Order {
     public BigDecimal getTotalDishPrice() {
         BigDecimal dishAmount = new BigDecimal(this.dishAmount);
         return dishAmount.multiply(this.dish.getPrice());
-
-
     }
 
     public void setDishAmount(Integer dishAmount) {
@@ -75,14 +70,13 @@ public class Order {
         this.orderedTime = orderedTime;
     }
 
-    public String getFulfilmentTime() { return fulfilmentTime.format(timeFormatter);
+    public String getFulfilmentTime() {
+        return fulfilmentTime.format(timeFormatter);
     }
 
     public LocalTime getFulfilmentTimeToCompare() {
         return fulfilmentTime;
     }
-
-
 
     public void setFulfilmentTime(LocalTime fulfilmentTime) {
         this.fulfilmentTime = fulfilmentTime;
@@ -93,15 +87,5 @@ public class Order {
             return "zaplaceno";
         }
         return " ";
-    }
-
-    public String getAlreadyPayedStatus(Boolean alreadyPayed) {
-        this.alreadyPayed = alreadyPayed;
-        String status = alreadyPayed ? "zaplaceno" : " ";
-        return status;
-    }
-
-    public void setAlreadyPayed(Boolean alreadyPayed) {
-        this.alreadyPayed = alreadyPayed;
     }
 }

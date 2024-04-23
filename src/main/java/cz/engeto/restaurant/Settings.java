@@ -1,8 +1,7 @@
 package cz.engeto.restaurant;
 
 public class Settings {
-    private static final String DISHES = "resources/dishes.txt";
-
+    public static final String DISHES = "resources/dishes.txt";
     private static final String TAB = "\t";
     private static final String COMA = ".";
 
@@ -67,8 +66,4 @@ public class Settings {
     public static String getEndbracket() {return ENDBRACKET;}
 
     public static String getOrderingtext() {return ORDERINGTEXT;}
-
-
-
-
 }

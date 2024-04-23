@@ -36,7 +36,7 @@ public class Table {
 
 
     public String getName() {
-        return Settings.getResources() + name + Settings.getFileSuffix();
+        return Settings.getResources() + name + number + Settings.getFileSuffix();
     }
 
     public void setName(String name) {
@@ -58,15 +58,18 @@ public class Table {
     }
 
 
-    public void createOrder() throws RestaurantException {
-        System.out.println("Zadejte číslo jídla: \n");
-        try {
-            Integer numberOfDish = Integer.parseInt(scanner.nextLine());
-            DishManager dishManager = new DishManager();
-            dishManager.loadDishStack(Settings.getDishes());
-            if (dishManager.isDishById(numberOfDish)) {
-                Dish dishById = dishManager.chosenDish(numberOfDish);
-                try {
+    public void createOrder(Integer numberOfOrders) throws RestaurantException {
+        Integer counter = 0;
+        while(numberOfOrders>counter) {
+            counter++;
+            System.out.println("Zadejte číslo jídla: \n");
+            try {
+                Integer numberOfDish = Integer.parseInt(scanner.nextLine());
+                DishManager dishManager = new DishManager();
+                dishManager.loadDishStack(Settings.getDishes());
+                    if (dishManager.isDishById(numberOfDish)) {
+                    Dish dishById = dishManager.chosenDish(numberOfDish);
+                    try {
                     System.out.println("Zadejte množství: \n");
                     Integer dishAmount = Integer.parseInt(scanner.nextLine());
                     System.out.println("Je zaplaceno? (Y/N) \n");
@@ -92,7 +95,7 @@ public class Table {
             throw new RuntimeException(e);
         }
     }
-
+    }
     public List<Order> getOrderList() {
         return orderList;
     }
@@ -159,6 +162,7 @@ public class Table {
                     } else {
                         Order order = new Order(dish, dishAmountInteger, alreadyPayed);
                         orderList.add(order);
+
                     }
                 }
             }
@@ -177,22 +181,15 @@ public class Table {
     }
 
     public Integer getNotFulfilmentTimeOrders() throws IOException, RestaurantException {
-        try {
-            this.loadOrderList();
-            Integer notFulfilmentTimeOrders = 0;
-            for (Order order : orderList) {
-                if (order.getFulfilmentTimeToCompare().isAfter(LocalTime.now())) {
-                    notFulfilmentTimeOrders++;
-                }
+        Integer notFulfilmentTimeOrders = 0;
+        for (Order order : orderList) {
+            if (order.getFulfilmentTimeToCompare().isAfter(LocalTime.now())) {
+                notFulfilmentTimeOrders++;
             }
-            return notFulfilmentTimeOrders;
-        } catch (RestaurantException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        return notFulfilmentTimeOrders;
 
-        }
+    }
 
     public List<Order> getOrdersSortedBeginOrderedTime() {
         List<Order> sortedOrders = new ArrayList<>(orderList);
@@ -214,10 +211,8 @@ public class Table {
 
     public List<Long> getListOfTotalPreparationTime() {
         List<Order> orderListForTime = new ArrayList<>(orderList);
-        //long numberOfOrders = 0;
         List<Long> listOfTimeOrders = new ArrayList<>();
         for (Order order : orderListForTime) {
-            //numberOfOrders++;
             Long durationTimePreparation = order.getOrderedTimeToCompare().until(order.getFulfilmentTimeToCompare(), ChronoUnit.MINUTES);
             listOfTimeOrders.add(durationTimePreparation);
         }
@@ -240,7 +235,36 @@ public class Table {
             BigDecimal dishPrice = order.getTotalDishPrice();
             totalDishPrice = totalDishPrice.add(dishPrice);
         }
-    return "Celková cena objednávky u stolu je: " +totalDishPrice+ " Kč";
+    return "Celková cena objednávky u stolu č."+this.getNumber()+ " je: " +totalDishPrice+ " Kč";
+    }
+
+    public void tableOrderListToBePrinted() throws RestaurantException {
+        System.out.println("velikost listu při tisku na začátku:  " +orderList.size());
+        String delimiter = Settings.getTab();
+        String coma = Settings.getComa();
+        String space = Settings.getSpace();
+        String beginBracket = Settings.getBeginbracket();
+        String endBracket = Settings.getEndbracket();
+        String currency = Settings.getCurrency();
+        String colon = Settings.getColon();
+        String dash = Settings.getDash();
+        Integer itemNumber = 1;
+        System.out.println(Settings.getTableStars() + Settings.getOrderingtext() + this.getNumber() + Settings.getTableStars());
+        System.out.println(Settings.getBeginOrderingStars());
+
+        for (Order order : orderList) {
+            System.out.println(
+                    itemNumber++ + coma + space
+                            + order.getDish().getTitle() + space
+                            + order.getDishToWriteNumberOfDishes() + space + beginBracket + order.getTotalDishPrice() + currency + endBracket
+                            + colon + delimiter
+                            + order.getOrderedTime()
+                            + dash
+                            + order.getFulfilmentTime() + delimiter
+                            + order.getAlreadyPayed()
+            );
+        }
+        System.out.println(Settings.getEndorderingstars());
     }
 }
 

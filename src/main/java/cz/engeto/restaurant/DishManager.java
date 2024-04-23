@@ -8,16 +8,11 @@ import java.util.*;
 
 public class DishManager {
 
-    private String fileName;
-
     private static final Scanner scanner = new Scanner(System.in);
     private List<Dish> dishStack = new ArrayList<>();
 
     public DishManager() throws RestaurantException {
         createDishFile();
-    }
-    public List<Dish> getDishStack() {
-        return dishStack;
     }
 
     public void addDish(Dish dish) {
@@ -28,11 +23,6 @@ public class DishManager {
         dishStack.remove(dish);
     }
 
-    public void getDishTitles() {
-        for(Dish dish : dishStack) {
-            System.out.println(dish.getTitle());
-        }
-    }
 
     public void createDishFile() throws RestaurantException {
 
@@ -42,10 +32,9 @@ public class DishManager {
                 System.out.println("Soubor s názvem " + file + " byl úspěšně vytvořen.");
             }
         } catch (IOException e) {
-            throw new RestaurantException("Soubor s názvem " + file + "se nepodařilo založit" + e.getLocalizedMessage());
+            throw new RestaurantException("Soubor s názvem " + file + "se nepodařilo založit. " + e.getLocalizedMessage());
         }
     }
-
 
     public void editTitle(Dish dish) {
         System.out.println("Zadejte nový název: \n");
@@ -86,8 +75,6 @@ public class DishManager {
             String newImage = scanner.nextLine();
             dish.setImage(newImage);
         }
-
-
     public void editDish(String title) throws RestaurantException, NumberFormatException {
         Boolean found = false;
         for (Dish dish : dishStack) {
@@ -142,7 +129,7 @@ public class DishManager {
         }catch (NullPointerException e) {
             System.err.println("Nebyl nalezen volaný objekt!" +e.getLocalizedMessage()+".");
         }
-        catch (NumberFormatException e) {
+        catch (NumberFormatException | DateTimeParseException e) {
             System.err.println("Soubor " +file+ " má neplatný formát nebo strukturu na řádku "+lineCounter+ "." +e.getLocalizedMessage()+".");
         }
         catch (ArrayIndexOutOfBoundsException e) {
@@ -157,7 +144,7 @@ public class DishManager {
             }
         }
         return false;
-        }
+    }
 
     public Dish chosenDish(int id) {
         try {
